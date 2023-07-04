@@ -8,7 +8,7 @@
 
 %code requires {
     struct VariableDeclarator {
-        char* identifier;
+        char identifier[1000];
         char* initializer;
     } *variableDeclarator;
 }
@@ -55,14 +55,31 @@ variable_declaration: LET variable_declarators {
 ;
 variable_declarators: /* empty */
                      |id_seq IDENTIFIER ':' NUMBER {
-                       printf("cheguei no declarators\n");
-                       printf("%s %s int\n", $1, $2);
+                      printf("cheguei no declarators\n");
+                      // printf("%s id do vd\n", $2);
+
+                      if($<args.identifier>1[0] == '\0'){
+                       fprintf(output, "var %s int;\n", $2);
+                       printf("%s = &1\n", $<args.identifier>1);
+                      } else {
+                        fprintf(output, "var %s%s int;\n",$<args.identifier>1, $2);
+                      }
+                      // free($1); // Free the memory allocated for id_seq
+                      //  fprintf(output, "var %s %s int;\n", $<args.identifier>1, $2);
                      } //todo: deve ter tipo por exemplo: int, float
                      |id_seq IDENTIFIER ':' STRING
                      |id_seq IDENTIFIER ':' BOOL
 ;
 id_seq : /* empty */
-        |id_seq IDENTIFIER COMMA {fprintf(output, "%s,", $2);}
+        |id_seq IDENTIFIER COMMA {
+            // Generate output 
+            strcat($<args.identifier>$, $2);
+            strcat($<args.identifier>$, ",");
+            printf("%s,", $2);
+            printf("cheguei no id_seq %s \n", $2);
+            // fprintf(output, "%s,", $2);
+           
+        }
 ;
 variable_declarator: IDENTIFIER  // adicionar variavel a tabela sem inicializar
                     | IDENTIFIER EQUAL initializer {
@@ -77,8 +94,11 @@ initializer:    STRING_LITERAL
 %%
 
 int main() {
-  output= fopen("output.c", "w");
+  output= fopen("output.c", "w"); //todo: .go e declaraçãode main no go
   yyparse();
+
+  fclose(output);  // Close output file
+
   return 0;
 }
 

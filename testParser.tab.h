@@ -47,7 +47,7 @@ extern int yydebug;
 #line 9 "testParser.y"
 
     struct VariableDeclarator {
-        char* identifier;
+        char identifier[1000];
         char* initializer;
     } *variableDeclarator;
 

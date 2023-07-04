@@ -120,7 +120,7 @@ extern int yydebug;
 #line 9 "testParser.y"
 
     struct VariableDeclarator {
-        char* identifier;
+        char identifier[1000];
         char* initializer;
     } *variableDeclarator;
 
@@ -548,8 +548,8 @@ static const yytype_int8 yytranslate[] =
 static const yytype_int8 yyrline[] =
 {
        0,    35,    35,    36,    38,    39,    41,    42,    43,    44,
-      46,    48,    50,    53,    54,    56,    57,    61,    62,    64,
-      65
+      46,    48,    50,    53,    54,    56,    57,    70,    71,    73,
+      74
 };
 #endif
 
@@ -1363,20 +1363,37 @@ yyreduce:
   case 16:
 #line 57 "testParser.y"
                                                    {
-                       printf("cheguei no declarators\n");
-                       printf("%s %s int\n", (yyvsp[-3].string), (yyvsp[-2].string));
+                      printf("cheguei no declarators\n");
+                      // printf("%s id do vd\n", $2);
+
+                      if((yyvsp[-3].args.identifier)[0] == '\0'){
+                       fprintf(output, "var %s int;\n", (yyvsp[-2].string));
+                       printf("%s = &1\n", (yyvsp[-3].args.identifier));
+                      } else {
+                        fprintf(output, "var %s %s int;\n",(yyvsp[-3].args.identifier), (yyvsp[-2].string));
+                      }
+                      // free($1); // Free the memory allocated for id_seq
+                      //  fprintf(output, "var %s %s int;\n", $<args.identifier>1, $2);
                      }
-#line 1370 "testParser.tab.c"
+#line 1379 "testParser.tab.c"
     break;
 
   case 20:
-#line 65 "testParser.y"
-                                 {fprintf(output, "%s,", (yyvsp[-1].string));}
-#line 1376 "testParser.tab.c"
+#line 74 "testParser.y"
+                                 {
+            // Generate output 
+            strcat((yyval.args.identifier), (yyvsp[-1].string));
+            strcat((yyval.args.identifier), ",");
+            printf("%s,", (yyvsp[-1].string));
+            printf("cheguei no id_seq %s \n", (yyvsp[-1].string));
+            // fprintf(output, "%s,", $2);
+           
+        }
+#line 1393 "testParser.tab.c"
     break;
 
 
-#line 1380 "testParser.tab.c"
+#line 1397 "testParser.tab.c"
 
       default: break;
     }
@@ -1608,12 +1625,15 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 77 "testParser.y"
+#line 94 "testParser.y"
 
 
 int main() {
-  output= fopen("output.c", "w");
+  output= fopen("output.c", "w"); //todo: .go e declaraçãode main no go
   yyparse();
+
+  fclose(output);  // Close output file
+
   return 0;
 }
 
