@@ -68,13 +68,40 @@
 /* First part of user prologue.  */
 #line 1 "testParser.y"
 
-  #include <stdio.h>
-  #include <stdlib.h>
-  #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+FILE * output;
+char* identifierList = NULL;
 
-  FILE * output;
+void appendIdentifier(char** list, char* identifier) {
+    if (*list == NULL) {
+        char* comma = ",";
+        *list = strdup(identifier);
+        size_t len = strlen(*list);
+        size_t idLen = strlen(identifier);
+        *list = realloc(*list, len + idLen + 2);
+        strcat(*list, comma);
+        
+    } else {
+        char* comma = ",";
+        size_t len = strlen(*list);
+        size_t idLen = strlen(identifier);
+        *list = realloc(*list, len + idLen + 2);
+        strcat(*list, identifier);
+        strcat(*list, comma);
+        printf("lista atual: %s\n", *list);
+        // identifierList = *list;
+    }
+}
 
-#line 78 "testParser.tab.c"
+void printIdentifierList(char* list) {
+    printf("%s\n", list);
+    fprintf(output, "%s\n", list);
+    free(list);
+}
+
+#line 105 "testParser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -111,20 +138,11 @@
 # define YY_YY_TESTPARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
 #endif
-/* "%code requires" blocks.  */
-#line 9 "testParser.y"
-
-    struct VariableDeclarator {
-        char identifier[1000];
-        char* initializer;
-    } *variableDeclarator;
-
-#line 128 "testParser.tab.c"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -163,13 +181,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 15 "testParser.y"
+#line 37 "testParser.y"
 
-        int number;
-        char *string;
-        struct VariableDeclarator args;
+    int number;
+    char* string;
 
-#line 173 "testParser.tab.c"
+#line 190 "testParser.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -547,9 +564,9 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    35,    35,    36,    38,    39,    41,    42,    43,    44,
-      46,    48,    50,    53,    54,    56,    57,    70,    71,    73,
-      74
+       0,    56,    56,    57,    59,    60,    62,    63,    64,    65,
+      67,    69,    71,    74,    75,    77,    78,    90,    91,    93,
+      94
 };
 #endif
 
@@ -1353,47 +1370,48 @@ yyreduce:
   switch (yyn)
     {
   case 12:
-#line 50 "testParser.y"
+#line 71 "testParser.y"
                                                {
-                            printf("cheguei no let \n");
-                        }
-#line 1361 "testParser.tab.c"
+        printf("cheguei no let \n");
+    }
+#line 1378 "testParser.tab.c"
     break;
 
   case 16:
-#line 57 "testParser.y"
-                                                   {
-                      printf("cheguei no declarators\n");
-                      // printf("%s id do vd\n", $2);
+#line 78 "testParser.y"
+                                   {
+        if (identifierList == NULL) {
+          printf("cheguei no declarators: %s int\n", (yyvsp[-2].string));
+          fprintf(output, "var %s int\n",(yyvsp[-2].string));
+        }
+        else {
+          fprintf(output, "var %s%s int\n", identifierList, (yyvsp[-2].string));
+          // printIdentifierList(identifierList);
+          free(identifierList);
+          identifierList = NULL;
+        }
+    }
+#line 1395 "testParser.tab.c"
+    break;
 
-                      if((yyvsp[-3].args.identifier)[0] == '\0'){
-                       fprintf(output, "var %s int;\n", (yyvsp[-2].string));
-                       printf("%s = &1\n", (yyvsp[-3].args.identifier));
-                      } else {
-                        fprintf(output, "var %s %s int;\n",(yyvsp[-3].args.identifier), (yyvsp[-2].string));
-                      }
-                      // free($1); // Free the memory allocated for id_seq
-                      //  fprintf(output, "var %s %s int;\n", $<args.identifier>1, $2);
-                     }
-#line 1379 "testParser.tab.c"
+  case 19:
+#line 93 "testParser.y"
+        {(yyval.string) = NULL;}
+#line 1401 "testParser.tab.c"
     break;
 
   case 20:
-#line 74 "testParser.y"
-                                 {
-            // Generate output 
-            strcat((yyval.args.identifier), (yyvsp[-1].string));
-            strcat((yyval.args.identifier), ",");
-            printf("%s,", (yyvsp[-1].string));
-            printf("cheguei no id_seq %s \n", (yyvsp[-1].string));
-            // fprintf(output, "%s,", $2);
-           
-        }
-#line 1393 "testParser.tab.c"
+#line 94 "testParser.y"
+                                {
+        // strcat(identifierList, ",");
+        appendIdentifier(&identifierList, (yyvsp[-1].string));
+        printf("cheguei no id_seq %s\n", (yyvsp[-1].string));
+    }
+#line 1411 "testParser.tab.c"
     break;
 
 
-#line 1397 "testParser.tab.c"
+#line 1415 "testParser.tab.c"
 
       default: break;
     }
@@ -1625,11 +1643,12 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 94 "testParser.y"
+#line 110 "testParser.y"
 
 
 int main() {
-  output= fopen("output.c", "w"); //todo: .go e declaraçãode main no go
+  output= fopen("output.go", "w"); //todo: .go e declaraçãode main no go
+  fprintf(output, "package main\n");
   yyparse();
 
   fclose(output);  // Close output file

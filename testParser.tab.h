@@ -38,20 +38,11 @@
 # define YY_YY_TESTPARSER_TAB_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 0
+# define YYDEBUG 1
 #endif
 #if YYDEBUG
 extern int yydebug;
 #endif
-/* "%code requires" blocks.  */
-#line 9 "testParser.y"
-
-    struct VariableDeclarator {
-        char identifier[1000];
-        char* initializer;
-    } *variableDeclarator;
-
-#line 55 "testParser.tab.h"
 
 /* Token type.  */
 #ifndef YYTOKENTYPE
@@ -90,13 +81,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 15 "testParser.y"
+#line 37 "testParser.y"
 
-        int number;
-        char *string;
-        struct VariableDeclarator args;
+    int number;
+    char* string;
 
-#line 100 "testParser.tab.h"
+#line 90 "testParser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

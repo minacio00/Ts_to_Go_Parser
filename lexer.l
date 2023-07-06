@@ -2,6 +2,7 @@
   #include <stdio.h>
   #include <string.h>
   #include "testParser.tab.h"  // Include the generated parser header file
+  char *stringpoool(char *);
 %}
 
 identifier       [a-zA-Z_][a-zA-Z0-9_]*
