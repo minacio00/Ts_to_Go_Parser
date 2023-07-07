@@ -163,7 +163,7 @@ variable_declaration: LET variable_declarators {
     commands: /* empty */
     |commands command ';' { fprintf (output,";\n"); }
     ;
-    command: IF '('exp')' '{' commands '}' {fprintf("if(%s){\n %s \n}")}
+    command: IF '('exp')' '{' commands '}' {fprintf(output,"if(%s){\n ",$3);}
 variable_declarators: /* empty */
                     | id_seq IDENTIFIER ':' TYPE {
                         if (identifierList == NULL) {
@@ -217,15 +217,20 @@ initializer:    STRING_LITERAL {$$ = $1;}
                 |   FLOAT_LITERAL {$$ = $1;}
                 |   BOOL {$$ = $1;}
 ;
-exp: INTEGER_LITERAL {$$ = $1; fprintf(output,"%i", $1); }
-| FLOAT_LITERAL {$$ = $1; fprintf(output,"%i", $1); }
+exp: INTEGER_LITERAL {$$ = $1; fprintf(output,"%s", $1); }
+| FLOAT_LITERAL {$$ = $1; fprintf(output,"%s", $1); }
 | IDENTIFIER {
             VAR *p=FindVAR($1);
             ASSERT( (p!=NULL),"Identificador Não declarado");
             $$ = $1;
-            fprintf (output,"%s", $1);
+            // fprintf (output,"%s", $1);
   }
-  |exp COMPARISSON exp {fprintf (output,"%s %s %s", $1, $2, $3);}
+  |exp COMPARISSON exp {fprintf (output,"%s %s %s\n", $1, $2, $3);}
+  |exp '+' exp {fprintf (output,"%s + %s\n", $1, $3);}
+  |exp '-' exp {fprintf (output,"%s - %s\n", $1, $3);}
+  |exp '*' exp {fprintf (output,"%s * %s\n", $1, $3);}
+  |exp '/' exp {fprintf (output,"%s / %s\n", $1, $3);}
+  |'('exp')' {$$ = $2;}
 %%
 
 int main() {
