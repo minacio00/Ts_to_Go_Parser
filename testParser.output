@@ -1,0 +1,659 @@
+Terminals unused in grammar
+
+    ASSGNOP
+    CLASS
+    INTERFACE
+    ELSE
+    WHILE
+    CONSTRUCTOR
+    STATIC
+    PUBLIC
+    NUMBER
+    STRING
+    fn_body
+
+
+Grammar
+
+    0 $accept: program $end
+
+    1 program: statement_list
+    2        | %empty
+
+    3 statement_list: statement
+    4               | statement_list statement
+
+    5 statement: import_statement
+    6          | export_statement
+    7          | variable_declaration
+
+    8 import_statement: IMPORT STRING_LITERAL
+
+    9 export_statement: EXPORT
+
+   10 variable_declaration: LET variable_declarators
+   11                     | VAR variable_declarators
+   12                     | CONST IDENTIFIER EQUAL initializer
+   13                     | FUNCTION IDENTIFIER '(' parameter_list ')' fn_types '{' commands '}'
+
+   14 fn_types: %empty
+   15         | ':' TYPE
+   16         | ':' VOID
+   17         | ':' ANY
+
+   18 parameter_list: IDENTIFIER fn_types
+   19               | parameter_list ',' IDENTIFIER
+   20               | parameter_list ',' IDENTIFIER ':' fn_types
+
+   21 commands: %empty
+   22         | commands command ';'
+
+   23 command: IF '(' exp ')' '{' commands '}'
+
+   24 variable_declarators: %empty
+   25                     | id_seq IDENTIFIER ':' TYPE
+
+   26 id_seq: %empty
+   27       | id_seq IDENTIFIER COMMA
+
+   28 initializer: STRING_LITERAL
+   29            | INTEGER_LITERAL
+   30            | FLOAT_LITERAL
+   31            | BOOL
+
+   32 exp: INTEGER_LITERAL
+   33    | FLOAT_LITERAL
+   34    | IDENTIFIER
+
+
+Terminals, with rules where they appear
+
+    $end (0) 0
+    '(' (40) 13 23
+    ')' (41) 13 23
+    ',' (44) 19 20
+    ':' (58) 15 16 17 20 25
+    ';' (59) 22
+    '{' (123) 13 23
+    '}' (125) 13 23
+    error (256)
+    IDENTIFIER <string> (258) 12 13 18 19 20 25 27 34
+    STRING_LITERAL <string> (259) 8 28
+    INTEGER_LITERAL <string> (260) 29 32
+    FLOAT_LITERAL <string> (261) 30 33
+    IMPORT <string> (262) 8
+    EXPORT <string> (263) 9
+    LET <string> (264) 10
+    CONST <string> (265) 12
+    VAR <string> (266) 11
+    ASSGNOP <string> (267)
+    FUNCTION <string> (268) 13
+    CLASS <string> (269)
+    INTERFACE <string> (270)
+    TYPE <string> (271) 15 25
+    VOID <string> (272) 16
+    ANY <string> (273) 17
+    IF <string> (274) 23
+    ELSE <string> (275)
+    WHILE <string> (276)
+    CONSTRUCTOR <string> (277)
+    STATIC <string> (278)
+    PUBLIC <string> (279)
+    COMMA <string> (280) 27
+    EQUAL <string> (281) 12
+    BOOL <string> (282) 31
+    NUMBER (283)
+    STRING (284)
+    fn_body (285)
+
+
+Nonterminals, with rules where they appear
+
+    $accept (38)
+        on left: 0
+    program (39)
+        on left: 1 2
+        on right: 0
+    statement_list (40)
+        on left: 3 4
+        on right: 1 4
+    statement (41)
+        on left: 5 6 7
+        on right: 3 4
+    import_statement (42)
+        on left: 8
+        on right: 5
+    export_statement (43)
+        on left: 9
+        on right: 6
+    variable_declaration (44)
+        on left: 10 11 12 13
+        on right: 7
+    fn_types <string> (45)
+        on left: 14 15 16 17
+        on right: 13 18 20
+    parameter_list <string> (46)
+        on left: 18 19 20
+        on right: 13 19 20
+    commands (47)
+        on left: 21 22
+        on right: 13 22 23
+    command (48)
+        on left: 23
+        on right: 22
+    variable_declarators <string> (49)
+        on left: 24 25
+        on right: 10 11
+    id_seq <string> (50)
+        on left: 26 27
+        on right: 25 27
+    initializer <string> (51)
+        on left: 28 29 30 31
+        on right: 12
+    exp <string> (52)
+        on left: 32 33 34
+        on right: 23
+
+
+State 0
+
+    0 $accept: . program $end
+
+    IMPORT    shift, and go to state 1
+    EXPORT    shift, and go to state 2
+    LET       shift, and go to state 3
+    CONST     shift, and go to state 4
+    VAR       shift, and go to state 5
+    FUNCTION  shift, and go to state 6
+
+    $default  reduce using rule 2 (program)
+
+    program               go to state 7
+    statement_list        go to state 8
+    statement             go to state 9
+    import_statement      go to state 10
+    export_statement      go to state 11
+    variable_declaration  go to state 12
+
+
+State 1
+
+    8 import_statement: IMPORT . STRING_LITERAL
+
+    STRING_LITERAL  shift, and go to state 13
+
+
+State 2
+
+    9 export_statement: EXPORT .
+
+    $default  reduce using rule 9 (export_statement)
+
+
+State 3
+
+   10 variable_declaration: LET . variable_declarators
+
+    IDENTIFIER  reduce using rule 26 (id_seq)
+    $default    reduce using rule 24 (variable_declarators)
+
+    variable_declarators  go to state 14
+    id_seq                go to state 15
+
+
+State 4
+
+   12 variable_declaration: CONST . IDENTIFIER EQUAL initializer
+
+    IDENTIFIER  shift, and go to state 16
+
+
+State 5
+
+   11 variable_declaration: VAR . variable_declarators
+
+    IDENTIFIER  reduce using rule 26 (id_seq)
+    $default    reduce using rule 24 (variable_declarators)
+
+    variable_declarators  go to state 17
+    id_seq                go to state 15
+
+
+State 6
+
+   13 variable_declaration: FUNCTION . IDENTIFIER '(' parameter_list ')' fn_types '{' commands '}'
+
+    IDENTIFIER  shift, and go to state 18
+
+
+State 7
+
+    0 $accept: program . $end
+
+    $end  shift, and go to state 19
+
+
+State 8
+
+    1 program: statement_list .
+    4 statement_list: statement_list . statement
+
+    IMPORT    shift, and go to state 1
+    EXPORT    shift, and go to state 2
+    LET       shift, and go to state 3
+    CONST     shift, and go to state 4
+    VAR       shift, and go to state 5
+    FUNCTION  shift, and go to state 6
+
+    $default  reduce using rule 1 (program)
+
+    statement             go to state 20
+    import_statement      go to state 10
+    export_statement      go to state 11
+    variable_declaration  go to state 12
+
+
+State 9
+
+    3 statement_list: statement .
+
+    $default  reduce using rule 3 (statement_list)
+
+
+State 10
+
+    5 statement: import_statement .
+
+    $default  reduce using rule 5 (statement)
+
+
+State 11
+
+    6 statement: export_statement .
+
+    $default  reduce using rule 6 (statement)
+
+
+State 12
+
+    7 statement: variable_declaration .
+
+    $default  reduce using rule 7 (statement)
+
+
+State 13
+
+    8 import_statement: IMPORT STRING_LITERAL .
+
+    $default  reduce using rule 8 (import_statement)
+
+
+State 14
+
+   10 variable_declaration: LET variable_declarators .
+
+    $default  reduce using rule 10 (variable_declaration)
+
+
+State 15
+
+   25 variable_declarators: id_seq . IDENTIFIER ':' TYPE
+   27 id_seq: id_seq . IDENTIFIER COMMA
+
+    IDENTIFIER  shift, and go to state 21
+
+
+State 16
+
+   12 variable_declaration: CONST IDENTIFIER . EQUAL initializer
+
+    EQUAL  shift, and go to state 22
+
+
+State 17
+
+   11 variable_declaration: VAR variable_declarators .
+
+    $default  reduce using rule 11 (variable_declaration)
+
+
+State 18
+
+   13 variable_declaration: FUNCTION IDENTIFIER . '(' parameter_list ')' fn_types '{' commands '}'
+
+    '('  shift, and go to state 23
+
+
+State 19
+
+    0 $accept: program $end .
+
+    $default  accept
+
+
+State 20
+
+    4 statement_list: statement_list statement .
+
+    $default  reduce using rule 4 (statement_list)
+
+
+State 21
+
+   25 variable_declarators: id_seq IDENTIFIER . ':' TYPE
+   27 id_seq: id_seq IDENTIFIER . COMMA
+
+    COMMA  shift, and go to state 24
+    ':'    shift, and go to state 25
+
+
+State 22
+
+   12 variable_declaration: CONST IDENTIFIER EQUAL . initializer
+
+    STRING_LITERAL   shift, and go to state 26
+    INTEGER_LITERAL  shift, and go to state 27
+    FLOAT_LITERAL    shift, and go to state 28
+    BOOL             shift, and go to state 29
+
+    initializer  go to state 30
+
+
+State 23
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' . parameter_list ')' fn_types '{' commands '}'
+
+    IDENTIFIER  shift, and go to state 31
+
+    parameter_list  go to state 32
+
+
+State 24
+
+   27 id_seq: id_seq IDENTIFIER COMMA .
+
+    $default  reduce using rule 27 (id_seq)
+
+
+State 25
+
+   25 variable_declarators: id_seq IDENTIFIER ':' . TYPE
+
+    TYPE  shift, and go to state 33
+
+
+State 26
+
+   28 initializer: STRING_LITERAL .
+
+    $default  reduce using rule 28 (initializer)
+
+
+State 27
+
+   29 initializer: INTEGER_LITERAL .
+
+    $default  reduce using rule 29 (initializer)
+
+
+State 28
+
+   30 initializer: FLOAT_LITERAL .
+
+    $default  reduce using rule 30 (initializer)
+
+
+State 29
+
+   31 initializer: BOOL .
+
+    $default  reduce using rule 31 (initializer)
+
+
+State 30
+
+   12 variable_declaration: CONST IDENTIFIER EQUAL initializer .
+
+    $default  reduce using rule 12 (variable_declaration)
+
+
+State 31
+
+   18 parameter_list: IDENTIFIER . fn_types
+
+    ':'  shift, and go to state 34
+
+    $default  reduce using rule 14 (fn_types)
+
+    fn_types  go to state 35
+
+
+State 32
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' parameter_list . ')' fn_types '{' commands '}'
+   19 parameter_list: parameter_list . ',' IDENTIFIER
+   20               | parameter_list . ',' IDENTIFIER ':' fn_types
+
+    ')'  shift, and go to state 36
+    ','  shift, and go to state 37
+
+
+State 33
+
+   25 variable_declarators: id_seq IDENTIFIER ':' TYPE .
+
+    $default  reduce using rule 25 (variable_declarators)
+
+
+State 34
+
+   15 fn_types: ':' . TYPE
+   16         | ':' . VOID
+   17         | ':' . ANY
+
+    TYPE  shift, and go to state 38
+    VOID  shift, and go to state 39
+    ANY   shift, and go to state 40
+
+
+State 35
+
+   18 parameter_list: IDENTIFIER fn_types .
+
+    $default  reduce using rule 18 (parameter_list)
+
+
+State 36
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' parameter_list ')' . fn_types '{' commands '}'
+
+    ':'  shift, and go to state 34
+
+    $default  reduce using rule 14 (fn_types)
+
+    fn_types  go to state 41
+
+
+State 37
+
+   19 parameter_list: parameter_list ',' . IDENTIFIER
+   20               | parameter_list ',' . IDENTIFIER ':' fn_types
+
+    IDENTIFIER  shift, and go to state 42
+
+
+State 38
+
+   15 fn_types: ':' TYPE .
+
+    $default  reduce using rule 15 (fn_types)
+
+
+State 39
+
+   16 fn_types: ':' VOID .
+
+    $default  reduce using rule 16 (fn_types)
+
+
+State 40
+
+   17 fn_types: ':' ANY .
+
+    $default  reduce using rule 17 (fn_types)
+
+
+State 41
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' parameter_list ')' fn_types . '{' commands '}'
+
+    '{'  shift, and go to state 43
+
+
+State 42
+
+   19 parameter_list: parameter_list ',' IDENTIFIER .
+   20               | parameter_list ',' IDENTIFIER . ':' fn_types
+
+    ':'  shift, and go to state 44
+
+    $default  reduce using rule 19 (parameter_list)
+
+
+State 43
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' parameter_list ')' fn_types '{' . commands '}'
+
+    $default  reduce using rule 21 (commands)
+
+    commands  go to state 45
+
+
+State 44
+
+   20 parameter_list: parameter_list ',' IDENTIFIER ':' . fn_types
+
+    ':'  shift, and go to state 34
+
+    $default  reduce using rule 14 (fn_types)
+
+    fn_types  go to state 46
+
+
+State 45
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' parameter_list ')' fn_types '{' commands . '}'
+   22 commands: commands . command ';'
+
+    IF   shift, and go to state 47
+    '}'  shift, and go to state 48
+
+    command  go to state 49
+
+
+State 46
+
+   20 parameter_list: parameter_list ',' IDENTIFIER ':' fn_types .
+
+    $default  reduce using rule 20 (parameter_list)
+
+
+State 47
+
+   23 command: IF . '(' exp ')' '{' commands '}'
+
+    '('  shift, and go to state 50
+
+
+State 48
+
+   13 variable_declaration: FUNCTION IDENTIFIER '(' parameter_list ')' fn_types '{' commands '}' .
+
+    $default  reduce using rule 13 (variable_declaration)
+
+
+State 49
+
+   22 commands: commands command . ';'
+
+    ';'  shift, and go to state 51
+
+
+State 50
+
+   23 command: IF '(' . exp ')' '{' commands '}'
+
+    IDENTIFIER       shift, and go to state 52
+    INTEGER_LITERAL  shift, and go to state 53
+    FLOAT_LITERAL    shift, and go to state 54
+
+    exp  go to state 55
+
+
+State 51
+
+   22 commands: commands command ';' .
+
+    $default  reduce using rule 22 (commands)
+
+
+State 52
+
+   34 exp: IDENTIFIER .
+
+    $default  reduce using rule 34 (exp)
+
+
+State 53
+
+   32 exp: INTEGER_LITERAL .
+
+    $default  reduce using rule 32 (exp)
+
+
+State 54
+
+   33 exp: FLOAT_LITERAL .
+
+    $default  reduce using rule 33 (exp)
+
+
+State 55
+
+   23 command: IF '(' exp . ')' '{' commands '}'
+
+    ')'  shift, and go to state 56
+
+
+State 56
+
+   23 command: IF '(' exp ')' . '{' commands '}'
+
+    '{'  shift, and go to state 57
+
+
+State 57
+
+   23 command: IF '(' exp ')' '{' . commands '}'
+
+    $default  reduce using rule 21 (commands)
+
+    commands  go to state 58
+
+
+State 58
+
+   22 commands: commands . command ';'
+   23 command: IF '(' exp ')' '{' commands . '}'
+
+    IF   shift, and go to state 47
+    '}'  shift, and go to state 59
+
+    command  go to state 49
+
+
+State 59
+
+   23 command: IF '(' exp ')' '{' commands '}' .
+
+    $default  reduce using rule 23 (command)

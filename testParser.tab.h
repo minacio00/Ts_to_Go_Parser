@@ -57,23 +57,25 @@ extern int yydebug;
     EXPORT = 263,
     LET = 264,
     CONST = 265,
-    VAR = 266,
-    ASSGNOP = 267,
+    VARTK = 266,
+    COMPARISSON = 267,
     FUNCTION = 268,
     CLASS = 269,
     INTERFACE = 270,
     TYPE = 271,
-    IF = 272,
-    ELSE = 273,
-    WHILE = 274,
-    CONSTRUCTOR = 275,
-    STATIC = 276,
-    PUBLIC = 277,
-    COMMA = 278,
-    EQUAL = 279,
-    NUMBER = 280,
-    STRING = 281,
-    BOOL = 282
+    VOID = 272,
+    ANY = 273,
+    IF = 274,
+    ELSE = 275,
+    WHILE = 276,
+    CONSTRUCTOR = 277,
+    STATIC = 278,
+    PUBLIC = 279,
+    COMMA = 280,
+    BOOL = 281,
+    NUMBER = 282,
+    STRING = 283,
+    fn_body = 284
   };
 #endif
 
@@ -81,12 +83,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 37 "testParser.y"
+#line 93 "testParser.y"
 
     int number;
     char* string;
 
-#line 90 "testParser.tab.h"
+#line 92 "testParser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

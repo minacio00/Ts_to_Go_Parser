@@ -13,6 +13,7 @@ typedef struct VAR {
 
 VAR *MakeVAR(char *, int, VAR *);
 VAR *FindVAR(char *);
+VAR *ListVars ();
 
 
 

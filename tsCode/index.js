@@ -1,4 +1,3 @@
-"use strict";
-let variable1 = "Hello";
-let x = 10, y, w;
-const variable2 = 42;
+var variable1 = "Hello";
+var x, y, w = 10;
+var variable2 = 42;
