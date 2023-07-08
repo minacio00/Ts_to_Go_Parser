@@ -13,6 +13,8 @@ identifier       [a-zA-Z_][a-zA-Z0-9_]*
 "export"        { return EXPORT; }
 "let"           { return LET; }
 "const"         { return CONST; }
+"console"       { return CONSOLE; }
+"log"       { return LOG; }
 "var"           { return VARTK; }
 "function"      { return FUNCTION; }
 "class"         { return CLASS; }
@@ -33,7 +35,7 @@ identifier       [a-zA-Z_][a-zA-Z0-9_]*
 "<="            {  return(COMPARISSON); yylval.string = strdup("<=");  }
 ">="            {  return(COMPARISSON); yylval.string = strdup(">=");  }
 "!="            {  return(COMPARISSON); yylval.string = strdup("!=");  }
-"=="             {  return(COMPARISSON); yylval.string = strdup("==");  }
+"=="            {  return(COMPARISSON); yylval.string = strdup("==");  }
 ">"             {  return(COMPARISSON); yylval.string = strdup(">");  }
 "<"             {  return(COMPARISSON); yylval.string = strdup("<");  }
 

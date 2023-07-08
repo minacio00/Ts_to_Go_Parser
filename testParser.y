@@ -19,6 +19,7 @@ int multipleVarsType= 0; // I made this to keep track of the type when parsing m
 #define ASSERT(x,y) if(!(x)) { printf("%s na  linha %d\n",(y),yylineno); semerro=1; }
 FILE * output;
 char* identifierList = NULL;
+char* exp_string = NULL;
 
 int getType(char* type){
   if (strcmp(type, "number") == 0) {
@@ -99,16 +100,21 @@ void printIdentifierList(char* list) {
 %token <string> STRING_LITERAL
 %token <string> INTEGER_LITERAL
 %token <string> FLOAT_LITERAL
-%token <string> IMPORT EXPORT LET CONST VARTK
+%token <string> IMPORT EXPORT LET CONST VARTK CONSOLE
 %token <string> COMPARISSON
 %token <string> FUNCTION CLASS INTERFACE 
-%token <string> TYPE VOID ANY
+%token <string> TYPE VOID ANY LOG
 %token <string> IF ELSE WHILE CONSTRUCTOR STATIC PUBLIC COMMA
 %token <string> BOOL
 %token NUMBER STRING 
 %token fn_body
 %type <string> variable_declarators initializer
-%type <string> id_seq parameter_list fn_types exp
+%type <string> id_seq parameter_list fn_types exp command commands
+
+%left COMPARISSON
+%left '-' '+'
+%left '*' '/'
+%right '^'
 
 %%
 program: statement_list
@@ -119,7 +125,8 @@ statement_list: statement
     ;
 statement: import_statement
     | export_statement
-    | variable_declaration // mudar para declaration
+    | variable_declaration
+    | commands
     ;
 import_statement: IMPORT STRING_LITERAL
     ;
@@ -131,9 +138,7 @@ variable_declaration: LET variable_declarators {
     | VARTK variable_declarators
     | CONST IDENTIFIER '=' initializer { fprintf(output, "const %s = %s\n",$2, $4);}
     | FUNCTION IDENTIFIER '(' parameter_list ')' fn_types '{' commands '}' {
-      //todo: function body
-      // printf("tamo na func amorzinho");
-      // talvez criar lista de parameteros só para a funcao
+     
       if (identifierList == NULL) {
         printf("lista nula");
         fprintf(output, "func %s (%s)%s {\n \n}\n",$2, identifierList, $6);
@@ -160,10 +165,16 @@ variable_declaration: LET variable_declarators {
     |parameter_list ',' IDENTIFIER {appendParamsIdentifier(&identifierList, $3, " interface{}"); $$ = identifierList;}
     |parameter_list ',' IDENTIFIER ':' fn_types {appendParamsIdentifier(&identifierList, $3, $5); $$ = identifierList;}
     ;
-    commands: /* empty */
-    |commands command ';' { fprintf (output,";\n"); }
+    commands: command
+    |commands command { fprintf (output,";\n"); }
     ;
-    command: IF '('exp')' '{' commands '}' {fprintf(output,"if(%s){\n ",$3);}
+    command: IF '(' exp ')' '{' commands '}' {printf("if"); fprintf(output, "if %s {\n%s}", exp_string, $6); }
+    | CONSOLE'.'LOG'('STRING_LITERAL')' {
+                                    char buffer[50];
+                                    sprintf(buffer,"\tfmt.println(%s)\n",$5);
+                                    $$ = buffer;
+                                    }
+    ;
 variable_declarators: /* empty */
                     | id_seq IDENTIFIER ':' TYPE {
                         if (identifierList == NULL) {
@@ -217,20 +228,44 @@ initializer:    STRING_LITERAL {$$ = $1;}
                 |   FLOAT_LITERAL {$$ = $1;}
                 |   BOOL {$$ = $1;}
 ;
-exp: INTEGER_LITERAL {$$ = $1; fprintf(output,"%s", $1); }
-| FLOAT_LITERAL {$$ = $1; fprintf(output,"%s", $1); }
-| IDENTIFIER {
-            VAR *p=FindVAR($1);
-            ASSERT( (p!=NULL),"Identificador Não declarado");
-            $$ = $1;
-            // fprintf (output,"%s", $1);
-  }
-  |exp COMPARISSON exp {fprintf (output,"%s %s %s\n", $1, $2, $3);}
-  |exp '+' exp {fprintf (output,"%s + %s\n", $1, $3);}
-  |exp '-' exp {fprintf (output,"%s - %s\n", $1, $3);}
-  |exp '*' exp {fprintf (output,"%s * %s\n", $1, $3);}
-  |exp '/' exp {fprintf (output,"%s / %s\n", $1, $3);}
-  |'('exp')' {$$ = $2;}
+exp: INTEGER_LITERAL {
+        size_t token_length = strlen($1);
+        size_t exp_string_size = strlen(&exp_string);
+        exp_string = realloc(exp_string, exp_string_size + token_length + 1);
+        strcat(exp_string, $1);
+        // exp_string_size += token_length;
+    }
+    | FLOAT_LITERAL {
+        size_t token_length = strlen($1);
+        size_t exp_string_size = strlen(exp_string);
+        exp_string = realloc(exp_string, exp_string_size + token_length + 1);
+        strcat(exp_string, $1);
+    }
+    | IDENTIFIER {
+        size_t token_length = strlen($1);
+        size_t exp_string_size = strlen(exp_string);
+        exp_string = realloc(exp_string, exp_string_size + token_length + 1);
+        strcat(exp_string, $1);
+    }
+    | exp '+' exp {
+        exp_string = strcat(exp_string, " + ");
+    }
+    | exp '-' exp {
+        exp_string = strcat(exp_string, " - ");
+    }
+    | exp '*' exp {
+        exp_string = strcat(exp_string, " * ");
+    }
+    | exp '/' exp {
+        exp_string = strcat(exp_string, " / ");
+    }
+    | '(' {
+        exp_string = strcat(exp_string, "(");
+    }
+    | ')' {
+        exp_string = strcat(exp_string, ")");
+    }
+    ;
 %%
 
 int main() {
